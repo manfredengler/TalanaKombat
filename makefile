@@ -1,5 +1,5 @@
 run:
-	python app/main.py
+	cd app; python main.py
 
 build:
 	docker build -t my-python-app .
