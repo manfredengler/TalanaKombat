@@ -3,8 +3,6 @@ from itertools import zip_longest
 
 from errors.fight import EmptySteps
 from constants import (
-    PLAYER_1,
-    PLAYER_2,
     HABILITIES,
     STARTING_DRAW_LIMIT,
     MOVEMENT_INTERPRETER,
@@ -29,7 +27,10 @@ class Player:
     def read_combo(self, combo: str):
         """Retorna el daño y el relato del combo"""
         data = self.combos.get(combo)
-        return data.get("damage"), data.get("phrase")
+        phrase = data.get("phrase")
+        if combo == "P":
+            phrase += " Tonyn" if self.name == "Arnaldor" else " Arnaldor"
+        return data.get("damage"), phrase
 
     def find_combo(self, movements: str, strike: str):
         """Se asume que el botón de golpe es justo después de la secuencia de movimiento,
