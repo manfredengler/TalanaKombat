@@ -62,12 +62,13 @@ class Player:
         if new_movements:
             phrase += " " + self.read_movements(movements=new_movements)
             if combo:
-                phrase += " y "
-        else:
-            phrase += " "
+                phrase += " y"
 
         # Añadimos el combo al relato si existe
-        phrase += combo if combo else ""
+        phrase += " " + combo if combo else ""
+
+        if phrase == self.name:
+            phrase += " no hace nada"
 
         return phrase, damage
 
