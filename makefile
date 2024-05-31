@@ -1,6 +1,9 @@
 run:
 	cd app; python main.py
 
+debug:
+	cd app; python -m pdb main.py
+
 build:
 	docker build -t my-python-app .
 

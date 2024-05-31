@@ -1,5 +1,6 @@
 STARTING_DRAW_LIMIT = 2
 DEFAULT_STARTING_PLAYER = 1
+DEFAULT_LIFE = 6
 
 PLAYER_1 = {
     "number" : 1,
@@ -13,40 +14,64 @@ PLAYER_2 = {
 
 HABILITIES = {
     "Tonyn Stallone": {
-        "DSD+P": {
+        "DSDP": {
             "name": "Taladoken",
             "damage": 3,
+            "phrase": "usa un Taladoken"
         },
-        "SD+K": {
+        "SDK": {
             "name": "Remuyuken",
             "damage": 2,
+            "phrase": "conecta un Remuyuken"
         },
         "P": {
             "name": "Puño",
             "damage": 1,
+            "phrase": "le da un puñetazo al pobre"
         },
         "K": {
             "name": "Patada",
             "damage": 1,
+            "phrase": "da una patada"
         }
     },
     "Arnaldor Shuatseneguer" : {
-        "SA+K": {
+        "SAK": {
             "name": "Remuyuken",
             "damage": 3,
+            "phrase": "conecta un Remuyuken"
         },
-        "ASA+P": {
+        "ASAP": {
             "name": "Taladoken",
             "damage": 2,
+            "phrase": "usa un Taladoken"
         },
         "P": {
             "name": "Puño",
             "damage": 1,
+            "phrase": "da un puñetazo"
         },
         "K": {
             "name": "Patada",
             "damage": 1,
+            "phrase": "da una patada"
         }
     },
 
+}
+
+MOVEMENT_INTERPRETER = {
+    "Tonyn Stallone": {
+        "W": "se levanta",
+        "S": "se agacha",
+        "D": "avanza",
+        "A": "retrocede",
+        "DEFAULT": "se mueve"}, 
+    "Arnaldor Shuatseneguer": {
+        "W": "se levanta",
+        "S": "se agacha",
+        "D": "retrocede",
+        "A": "avanza",
+        "DEFAULT": "se mueve"
+    }
 }
