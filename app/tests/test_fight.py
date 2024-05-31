@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch, Mock, call
-from fight import get_steps, zip_steps, Player
+from fight import get_steps, zip_steps, Player, is_player_1_starter
 from errors.fight import EmptySteps
 from constants import PLAYER_1, PLAYER_2, HABILITIES, STARTING_DRAW_LIMIT, MOVEMENT_INTERPRETER, DEFAULT_LIFE
 
@@ -88,6 +88,31 @@ class TestZipSteps(unittest.TestCase):
         # Verifico que el error ocurra al llamar a zip_steps, solo falla no debe manejar el caso
         with self.assertRaises(ValueError):
             zip_steps(input_dict)
+
+class TestIsPlayer1Starter(unittest.TestCase):
+    def test_is_player_1_starter__player_1_wins(self):
+        steps = [(['A', 'B'], ['CD', 'E']), (['F', 'G'], ['H', 'I'])]
+        self.assertTrue(is_player_1_starter(steps))
+
+    def test_is_player_1_starter__player_2_wins(self):
+        steps = [(['ABCD', 'C'], ['D', 'E']), (['F', 'G'], ['I', 'J'])]
+        self.assertFalse(is_player_1_starter(steps))
+
+    def test_is_player_1_starter__tie(self):
+        steps = [(['A', 'B'], ['D', 'E']), (['C', 'D'], ['C', 'D']), (['C', 'D'], ['C', 'D'])]
+        self.assertTrue(is_player_1_starter(steps))
+
+    def test_is_player_1_starter__limit_reached__player_1_wins(self):
+        steps = [(['A', 'B'], ['A', 'B'])] * 10
+        self.assertTrue(is_player_1_starter(steps))
+
+    def test_is_player_1_starter_empty_steps(self):
+        steps = []
+        self.assertTrue(is_player_1_starter(steps))
+
+    def test_is_player_1_starter_invalid_input(self):
+        with self.assertRaises(IndexError):
+            is_player_1_starter("invalid input")
 
 
 
