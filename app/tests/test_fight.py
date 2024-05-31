@@ -1,6 +1,6 @@
 from typing import Literal
 import unittest
-from unittest.mock import patch, Mock, call, MagicMock
+from unittest.mock import patch, Mock, call
 from fight import (
     get_steps,
     zip_steps,
@@ -11,10 +11,7 @@ from fight import (
 )
 from errors.fight import EmptySteps
 from constants import (
-    PLAYER_1,
-    PLAYER_2,
     HABILITIES,
-    STARTING_DRAW_LIMIT,
     MOVEMENT_INTERPRETER,
     DEFAULT_LIFE,
 )
