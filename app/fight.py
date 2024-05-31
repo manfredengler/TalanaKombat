@@ -12,7 +12,12 @@ class Player:
         self.life = DEFAULT_LIFE
         self.combos = HABILITIES[self.fullname]
         self.movement_interpreter = MOVEMENT_INTERPRETER[self.fullname]
-    
+
+    def read_movements(self, movements: str):
+        return self.movement_interpreter.get(
+            movements, self.movement_interpreter["DEFAULT"]
+        )
+
     def read_combo(self, combo: str):
         """Retorna el daño y el relato del combo"""
         data = self.combos.get(combo)
@@ -39,10 +44,25 @@ class Player:
         phrase = self.name
 
         # Vemos si hay un combo al final de los movimientos, actualizamos la secuencia si coincide
-        new_movements, combo, damage = self.find_combo(movements=movements, strike=strike)
+        # Vemos si quedan movimientos luego de intentar obtener un combo y añadimos su relato
+        if new_movements:
+            phrase += " " + self.read_movements(movements=new_movements)
+            if combo:
+                phrase += " y "
+        else:
+            phrase += " "
+
+        # Añadimos el combo al relato si existe
+        phrase += combo if combo else ""
 
         return phrase, damage
-def get_steps(steps:dict):
+
+    def deal_damage(self, damage: int):
+        """Recibe daño aplicado, si la vida resultante es menor que 0 retorna True por lo contrario False"""
+        self.life -= damage
+        return self.life <= 0
+
+
     """Obtiene un dict con movimientos y golpes y devuelve una lista de tuplas con forma [movimiento, golpe]"""
     movements= steps.get("movimientos")
     strikes= steps.get("golpes")
@@ -97,10 +117,19 @@ def fight_loop(steps:list[tuple]):
                 # Si player turn es True usamos al jugador 1
                 player = player_1
                 phrase, damage = player.run_step(step[0])
+                finish = player_2.deal_damage(damage=damage)
             else:
                 # por el contrario usamos al jugador 2
                 player = player_2
                 phrase, damage = player.run_step(step[1])
+                finish = player_1.deal_damage(damage=damage)
+
             print(phrase)
+
+            if finish:
+                print(
+                    f"{player.name} Gana la pelea y aun le queda {player.life} de energía"
+                )
+                return
 
             player_turn = not player_turn
