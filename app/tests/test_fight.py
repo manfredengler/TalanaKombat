@@ -219,3 +219,47 @@ class TestPlayerReadCombo(unittest.TestCase):
         combo = ""
         with self.assertRaises(AttributeError):
             player.read_combo(combo)
+
+
+class TestFindCombo(unittest.TestCase):
+    def test_find_composed_combo(self):
+        data = {"number": 1, "name": "Tonyn Stallone"}
+        player = Player(data)
+        strike = "K"
+        movements = "ASDAWWDASDASD"
+        expected_combo_text = "conecta un Remuyuken"
+        expected_damage = 2
+
+        new_movements, combo, damage = player.find_combo(movements, strike)
+
+        self.assertEqual(new_movements, "ASDAWWDASDA")
+        self.assertEqual(combo, expected_combo_text)
+        self.assertEqual(damage, expected_damage)
+
+    def test_simple_combo(self):
+        data = {"number": 1, "name": "Tonyn Stallone"}
+        player = Player(data)
+        strike = f"P"
+        movements = "ASDAWWDASDASD"
+        expected_combo_text = "le da un puñetazo al pobre"
+        expected_damage = 1
+
+        new_movements, combo, damage = player.find_combo(movements, strike)
+
+        self.assertEqual(new_movements, movements)
+        self.assertEqual(combo, expected_combo_text)
+        self.assertEqual(damage, expected_damage)
+
+    def test_no_combo(self):
+        data = {"number": 1, "name": "Tonyn Stallone"}
+        player = Player(data)
+        strike = ""
+        movements = "ASDAWWDASDASD"
+        expected_combo_text = ""
+        expected_damage = 0
+
+        new_movements, combo, damage = player.find_combo(movements, strike)
+
+        self.assertEqual(new_movements, movements)
+        self.assertEqual(combo, expected_combo_text)
+        self.assertEqual(damage, expected_damage)
