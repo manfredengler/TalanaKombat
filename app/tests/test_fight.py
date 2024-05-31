@@ -322,3 +322,21 @@ class TestRunStep(unittest.TestCase):
 
         self.assertEqual(phrase, expected_phrase)
         self.assertEqual(damage, expected_damage)
+
+
+class TestDealDamage(unittest.TestCase):
+
+    def test_deal_damage_less_than_life(self):
+        player = Player(data={"name": "Arnaldor Shuatseneguer", "number": 1})
+        self.assertFalse(player.deal_damage(2))
+        self.assertEqual(player.life, 4)
+
+    def test_deal_damage_equal_to_life(self):
+        player = Player(data={"name": "Tonyn Stallone", "number": 1})
+        self.assertTrue(player.deal_damage(6))
+        self.assertEqual(player.life, 0)
+
+    def test_deal_damage_more_than_life(self):
+        player = Player(data={"name": "Arnaldor Shuatseneguer", "number": 1})
+        self.assertTrue(player.deal_damage(10))
+        self.assertEqual(player.life, -4)
