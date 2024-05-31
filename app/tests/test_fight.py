@@ -1,7 +1,14 @@
 from typing import Literal
 import unittest
 from unittest.mock import patch, Mock, call, MagicMock
-from fight import get_steps, zip_steps, Player, is_player_1_starter, ends_with_word
+from fight import (
+    get_steps,
+    zip_steps,
+    Player,
+    is_player_1_starter,
+    ends_with_word,
+    fight_loop,
+)
 from errors.fight import EmptySteps
 from constants import (
     PLAYER_1,
@@ -340,3 +347,68 @@ class TestDealDamage(unittest.TestCase):
         player = Player(data={"name": "Arnaldor Shuatseneguer", "number": 1})
         self.assertTrue(player.deal_damage(10))
         self.assertEqual(player.life, -4)
+
+
+class TestFightLoop(unittest.TestCase):
+    def test_fight_loop_player1_wins(self):
+        player_1 = Player(data={"name": "Tonyn Stallone", "number": 1})
+        player_2 = Player(data={"name": "Arnaldor Shuatseneguer", "number": 2})
+        steps = [
+            (("SDD", "K"), ("DSD", "P")),
+            (("DSD", "P"), ("WSAW", "K")),
+            (("SA", "K"), ("ASA", "K")),
+            (("DSD", "P"), ("", "K")),
+            (["", ""], ("ASA", "P")),
+            (["", ""], ("SA", "k")),
+        ]
+        fight_loop(steps, player_1=player_1, player_2=player_2)
+        self.assertEqual(player_1.life, 1)
+        self.assertEqual(player_2.life, -2)
+
+    def test_fight_loop_player2_wins(self):
+        player_1 = Player(data={"name": "Tonyn Stallone", "number": 1})
+        player_2 = Player(data={"name": "Arnaldor Shuatseneguer", "number": 2})
+        steps = [
+            (("DSD", "P"), ("", "P")),
+            (("S", ""), ("ASA", "")),
+            (["", ""], ("DA", "P")),
+            (["", ""], ("AAA", "K")),
+            (["", ""], ("", "K")),
+            (["", ""], ("SA", "K")),
+        ]
+        fight_loop(steps, player_1=player_1, player_2=player_2)
+        self.assertEqual(player_1.life, -1)
+        self.assertEqual(player_2.life, 3)
+
+    def test_fight_loop_ends_with_less_instrucctions__player1_wins(self):
+        player_1 = Player(data={"name": "Tonyn Stallone", "number": 1})
+        player_2 = Player(data={"name": "Arnaldor Shuatseneguer", "number": 2})
+        steps = [
+            (("DSD", "P"), ("", "P")),
+            (("S", ""), ("ASA", "")),
+        ]
+        fight_loop(steps, player_1=player_1, player_2=player_2)
+        self.assertEqual(player_1.life, 5)
+        self.assertEqual(player_2.life, 3)
+
+    def test_fight_loop_ends_with_less_instrucctions__player2_wins(self):
+        player_1 = Player(data={"name": "Tonyn Stallone", "number": 1})
+        player_2 = Player(data={"name": "Arnaldor Shuatseneguer", "number": 2})
+        steps = [
+            (("SDD", "K"), ("DSDASA", "P")),
+        ]
+        fight_loop(steps, player_1=player_1, player_2=player_2)
+        self.assertEqual(player_1.life, 4)
+        self.assertEqual(player_2.life, 5)
+
+    def test_fight_loop_ends_with_less_instrucctions__draw(self):
+        player_1 = Player(data={"name": "Tonyn Stallone", "number": 1})
+        player_2 = Player(data={"name": "Arnaldor Shuatseneguer", "number": 2})
+        steps = [
+            (("SDD", "K"), ("DSD", "P")),
+            (("DSD", "P"), ("WSAW", "K")),
+            (("SA", "K"), ("ASA", "K")),
+        ]
+        fight_loop(steps, player_1=player_1, player_2=player_2)
+        self.assertEqual(player_1.life, 1)
+        self.assertEqual(player_2.life, 1)
