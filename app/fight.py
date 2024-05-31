@@ -118,11 +118,8 @@ def is_player_1_starter(steps):
     return True
 
 
-def fight_loop(steps: list[tuple]):
+def fight_loop(steps: list[tuple], player_1: Player, player_2: Player):
     """Recorre cada step"""
-    player_1 = Player(data=PLAYER_1)
-    player_2 = Player(data=PLAYER_2)
-
     starter = is_player_1_starter(steps)
     player_turn = starter
 
@@ -149,3 +146,12 @@ def fight_loop(steps: list[tuple]):
                 return
 
             player_turn = not player_turn
+
+    ending_phrase = "La pelea terminó "
+    if player_1.life > player_2.life:
+        ending_phrase += f"y {player_1.name} gano por tener mas puntos de vida"
+    elif player_1.life < player_2.life:
+        ending_phrase += f"y {player_2.name} gano por tener mas puntos de vida"
+    else:
+        ending_phrase += "y resultó en empate"
+    print(ending_phrase)
