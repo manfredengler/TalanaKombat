@@ -2,10 +2,18 @@ import re
 from itertools import zip_longest
 
 from errors.fight import EmptySteps
-from constants import PLAYER_1, PLAYER_2, HABILITIES, STARTING_DRAW_LIMIT, MOVEMENT_INTERPRETER, DEFAULT_LIFE
+from constants import (
+    PLAYER_1,
+    PLAYER_2,
+    HABILITIES,
+    STARTING_DRAW_LIMIT,
+    MOVEMENT_INTERPRETER,
+    DEFAULT_LIFE,
+)
+
 
 class Player:
-    def __init__(self, data:dict):
+    def __init__(self, data: dict):
         self.number = data.get("number")
         self.fullname = data.get("name")
         self.name = self.fullname.split(" ")[0]
@@ -22,12 +30,13 @@ class Player:
         """Retorna el daño y el relato del combo"""
         data = self.combos.get(combo)
         return data.get("damage"), data.get("phrase")
-    
-    def find_combo(self, movements:str, strike:str):
-        """Se asume que el botón de golpe es justo después de la secuencia de movimiento, 
-        por ende busca con regex si existe un combo al final de las instrucciones, 
-        si cumple lo enuncia y lo retira de las instrucciones, entregando los movimientos iniciales si hay"""
-        joined_instructions = movements+strike
+
+    def find_combo(self, movements: str, strike: str):
+        """Se asume que el botón de golpe es justo después de la secuencia de movimiento,
+        por ende busca con regex si existe un combo al final de las instrucciones,
+        si cumple lo enuncia y lo retira de las instrucciones, entregando los movimientos iniciales si hay
+        """
+        joined_instructions = movements + strike
         combo = ""
         damage = 0
         for key in self.combos.keys():
@@ -35,8 +44,8 @@ class Player:
                 damage, combo = self.read_combo(combo=key)
                 joined_instructions = joined_instructions.removesuffix(key)
         return joined_instructions, combo, damage
-    
-    def run_step(self, step:tuple[str]):
+
+    def run_step(self, step: tuple[str]):
         """Retorna el relato del turno y si se ejecuto un combo el daño que hizo con este"""
         movements, strike = step
 
@@ -44,6 +53,10 @@ class Player:
         phrase = self.name
 
         # Vemos si hay un combo al final de los movimientos, actualizamos la secuencia si coincide
+        new_movements, combo, damage = self.find_combo(
+            movements=movements, strike=strike
+        )
+
         # Vemos si quedan movimientos luego de intentar obtener un combo y añadimos su relato
         if new_movements:
             phrase += " " + self.read_movements(movements=new_movements)
@@ -63,18 +76,20 @@ class Player:
         return self.life <= 0
 
 
+def get_steps(steps: dict):
     """Obtiene un dict con movimientos y golpes y devuelve una lista de tuplas con forma [movimiento, golpe]"""
-    movements= steps.get("movimientos")
-    strikes= steps.get("golpes")
+    movements = steps.get("movimientos")
+    strikes = steps.get("golpes")
     if movements is None or strikes is None:
         raise EmptySteps("Se esperaban ambos diccionarios: movimientos y golpes")
-    
+
     if not isinstance(movements, list):
         raise TypeError("El valor de 'movimientos' debe ser una lista")
-    
+
     if not isinstance(strikes, list):
         raise TypeError("El valor de 'golpes' debe ser una lista")
     return list(zip(movements, strikes))
+
 
 def zip_steps(input_dict: dict):
     """Parea cada serie de combinaciones por jugador"""
@@ -83,7 +98,8 @@ def zip_steps(input_dict: dict):
     # El largo puede variar, por ende parea las restantes con un lista por defecto
     return list(zip_longest(player_1_steps, player_2_steps, fillvalue=["", ""]))
 
-def ends_with_word(text:str, keyword:str) -> bool:
+
+def ends_with_word(text: str, keyword: str) -> bool:
     """Revisa si una frase incluye al final una palabra clave"""
     reg = rf"{keyword}\b$"
     return re.search(reg, text) is not None
@@ -102,7 +118,7 @@ def is_player_1_starter(steps):
     return True
 
 
-def fight_loop(steps:list[tuple]):
+def fight_loop(steps: list[tuple]):
     """Recorre cada step"""
     player_1 = Player(data=PLAYER_1)
     player_2 = Player(data=PLAYER_2)
