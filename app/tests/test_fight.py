@@ -115,6 +115,23 @@ class TestIsPlayer1Starter(unittest.TestCase):
             is_player_1_starter("invalid input")
 
 
+class TestEndsWithWord(unittest.TestCase):
+    def test_ends_with_word_true(self):
+        self.assertTrue(ends_with_word("Hello World", "World"))
+        self.assertTrue(ends_with_word("ASDASK", "ASK"))
+        self.assertTrue(ends_with_word("ASP", "SP"))
+        self.assertTrue(ends_with_word("P", "P"))
+
+    def test_ends_with_word_false(self):
+        self.assertFalse(ends_with_word("Hello World", "Universe"))
+        self.assertFalse(ends_with_word("ASDASK", "AS"))
+        self.assertFalse(ends_with_word("ASAWASP", "WAP"))
+
+    def test_ends_with_word_edge_cases(self):
+        self.assertFalse(ends_with_word("", ""))
+        self.assertTrue(ends_with_word("Hello World", ""))
+        self.assertFalse(ends_with_word("", "AP"))
+
 
 class TestPlayerInit(unittest.TestCase):
     def test_init_with_valid_data(self):
@@ -142,3 +159,24 @@ class TestPlayerInit(unittest.TestCase):
         data = "invalid data type"
         with self.assertRaises(AttributeError):
             Player(data)
+
+
+class TestPlayerReadCombo(unittest.TestCase):
+    def test_read_combo_valid_combo(self):
+        player = Player({"number": 1, "name": "Tonyn Stallone"})
+        combo = "SDK"
+        damage, phrase = player.read_combo(combo)
+        self.assertEqual(damage, 2)
+        self.assertEqual(phrase, "conecta un Remuyuken")
+
+    def test_read_combo_invalid_combo(self):
+        player = Player({"number": 1, "name": "Tonyn Stallone"})
+        combo = "invalid_combo"
+        with self.assertRaises(AttributeError):
+            player.read_combo(combo)
+
+    def test_read_combo_combo_with_no_phrase(self):
+        player = Player({"number": 1, "name": "Tonyn Stallone"})
+        combo = ""
+        with self.assertRaises(AttributeError):
+            player.read_combo(combo)
