@@ -34,8 +34,23 @@ def zip_steps(input_dict: dict):
     # El largo puede variar, por ende parea las restantes con un lista por defecto
     return list(zip_longest(player_1_steps, player_2_steps, fillvalue=["", ""]))
 
+def is_player_1_starter(steps):
+    """Intenta hasta el limite de intentos buscar quien inicia segun la menor combinacion de botones por turno"""
+    for i, step in enumerate(steps[:STARTING_DRAW_LIMIT]):
+        player_1_keys = "".join(step[0])
+        player_2_keys = "".join(step[1])
+        if len(player_1_keys) < len(player_2_keys):
+            return True
+        if len(player_1_keys) > len(player_2_keys):
+            return False
+    # si hay empate inicia el player 1 (total el player 2 siempre es del hermano chico)
+    return True
+
 
 def fight_loop(steps:list[tuple]):
     """Recorre cada step"""
     player_1 = Player(data=PLAYER_1)
     player_2 = Player(data=PLAYER_2)
+
+    starter = is_player_1_starter(steps)
+    player_turn = starter
