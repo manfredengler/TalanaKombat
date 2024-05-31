@@ -1,7 +1,9 @@
 import unittest
 from unittest.mock import patch, Mock, call
-from fight import get_steps, zip_steps
+from fight import get_steps, zip_steps, Player
 from errors.fight import EmptySteps
+from constants import PLAYER_1, PLAYER_2, HABILITIES, STARTING_DRAW_LIMIT, MOVEMENT_INTERPRETER, DEFAULT_LIFE
+
 
 class TestFight(unittest.TestCase):
 
@@ -86,3 +88,32 @@ class TestZipSteps(unittest.TestCase):
         # Verifico que el error ocurra al llamar a zip_steps, solo falla no debe manejar el caso
         with self.assertRaises(ValueError):
             zip_steps(input_dict)
+
+
+
+class TestPlayerInit(unittest.TestCase):
+    def test_init_with_valid_data(self):
+        data = {"number": 1, "name": "Tonyn Stallone"}
+        player = Player(data)
+
+        self.assertEqual(player.number, 1)
+        self.assertEqual(player.fullname, "Tonyn Stallone")
+        self.assertEqual(player.name, "Tonyn")
+        self.assertEqual(player.life, DEFAULT_LIFE)
+        self.assertEqual(player.combos, HABILITIES["Tonyn Stallone"])
+        self.assertEqual(player.movement_interpreter, MOVEMENT_INTERPRETER["Tonyn Stallone"])
+
+    def test_init_with_missing_number(self):
+        data = {"name": "Jane Doe"}
+        with self.assertRaises(KeyError):
+            Player(data)
+
+    def test_init_with_missing_name(self):
+        data = {"number": 2}
+        with self.assertRaises(AttributeError):
+            Player(data)
+
+    def test_init_with_invalid_data_type(self):
+        data = "invalid data type"
+        with self.assertRaises(AttributeError):
+            Player(data)
