@@ -1,3 +1,4 @@
+from typing import Literal
 import unittest
 from unittest.mock import patch, Mock, call, MagicMock
 from fight import get_steps, zip_steps, Player, is_player_1_starter, ends_with_word
@@ -262,4 +263,62 @@ class TestFindCombo(unittest.TestCase):
 
         self.assertEqual(new_movements, movements)
         self.assertEqual(combo, expected_combo_text)
+        self.assertEqual(damage, expected_damage)
+
+
+class TestRunStep(unittest.TestCase):
+    def test_run_step_with_only_combo(self):
+        data = {"number": 1, "name": "Tonyn Stallone"}
+        player = Player(data)
+        strike = f"P"
+        movements = ""
+        step = (movements, strike)
+        expected_phrase = "Tonyn le da un puñetazo al pobre"
+        expected_damage = 1
+
+        phrase, damage = player.run_step(step)
+
+        self.assertEqual(phrase, expected_phrase)
+        self.assertEqual(damage, expected_damage)
+
+    def test_run_step_with_combo_and_movement(self):
+        data = {"number": 1, "name": "Tonyn Stallone"}
+        player = Player(data)
+        strike = f"P"
+        movements = "ASDAWWDASDASD"
+        step = (movements, strike)
+        expected_phrase = "Tonyn se mueve y le da un puñetazo al pobre"
+        expected_damage = 1
+
+        phrase, damage = player.run_step(step)
+
+        self.assertEqual(phrase, expected_phrase)
+        self.assertEqual(damage, expected_damage)
+
+    def test_run_step_with_movement_and_without_combo(self):
+        data = {"number": 1, "name": "Tonyn Stallone"}
+        player = Player(data)
+        movements = "SAS"
+        strike = ""
+        step: tuple[Literal["SAS"], Literal[""]] = (movements, strike)
+        expected_phrase = "Tonyn se mueve"
+        expected_damage = 0
+
+        phrase, damage = player.run_step(step)
+
+        self.assertEqual(phrase, expected_phrase)
+        self.assertEqual(damage, expected_damage)
+
+    def test_run_step_with_simple_movement(self):
+        data = {"number": 1, "name": "Tonyn Stallone"}
+        player = Player(data)
+        movements = "D"
+        strike = ""
+        step = (movements, strike)
+        expected_phrase = "Tonyn avanza"
+        expected_damage = 0
+
+        phrase, damage = player.run_step(step)
+
+        self.assertEqual(phrase, expected_phrase)
         self.assertEqual(damage, expected_damage)
