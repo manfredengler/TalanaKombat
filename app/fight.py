@@ -1,3 +1,4 @@
+import re
 from itertools import zip_longest
 
 from errors.fight import EmptySteps
@@ -11,8 +12,36 @@ class Player:
         self.life = DEFAULT_LIFE
         self.combos = HABILITIES[self.fullname]
         self.movement_interpreter = MOVEMENT_INTERPRETER[self.fullname]
+    
+    def read_combo(self, combo: str):
+        """Retorna el daño y el relato del combo"""
+        data = self.combos.get(combo)
+        return data.get("damage"), data.get("phrase")
+    
+    def find_combo(self, movements:str, strike:str):
+        """Se asume que el botón de golpe es justo después de la secuencia de movimiento, 
+        por ende busca con regex si existe un combo al final de las instrucciones, 
+        si cumple lo enuncia y lo retira de las instrucciones, entregando los movimientos iniciales si hay"""
+        joined_instructions = movements+strike
+        combo = ""
+        damage = 0
+        for key in self.combos.keys():
+            if ends_with_word(text=joined_instructions, keyword=key):
+                damage, combo = self.read_combo(combo=key)
+                joined_instructions = joined_instructions.removesuffix(key)
+        return joined_instructions, combo, damage
+    
+    def run_step(self, step:tuple[str]):
+        """Retorna el relato del turno y si se ejecuto un combo el daño que hizo con este"""
+        movements, strike = step
 
+        # Formamos el enunciado uniendo strings partiendo por el nombre del jugador correspondiente
+        phrase = self.name
 
+        # Vemos si hay un combo al final de los movimientos, actualizamos la secuencia si coincide
+        new_movements, combo, damage = self.find_combo(movements=movements, strike=strike)
+
+        return phrase, damage
 def get_steps(steps:dict):
     """Obtiene un dict con movimientos y golpes y devuelve una lista de tuplas con forma [movimiento, golpe]"""
     movements= steps.get("movimientos")
@@ -34,6 +63,12 @@ def zip_steps(input_dict: dict):
     # El largo puede variar, por ende parea las restantes con un lista por defecto
     return list(zip_longest(player_1_steps, player_2_steps, fillvalue=["", ""]))
 
+def ends_with_word(text:str, keyword:str) -> bool:
+    """Revisa si una frase incluye al final una palabra clave"""
+    reg = rf"{keyword}\b$"
+    return re.search(reg, text) is not None
+
+
 def is_player_1_starter(steps):
     """Intenta hasta el limite de intentos buscar quien inicia segun la menor combinacion de botones por turno"""
     for i, step in enumerate(steps[:STARTING_DRAW_LIMIT]):
@@ -54,3 +89,18 @@ def fight_loop(steps:list[tuple]):
 
     starter = is_player_1_starter(steps)
     player_turn = starter
+
+    for step in steps:
+        # Por cada turno, ambos jugadores realizan su combinacion de teclas
+        for _ in range(2):
+            if player_turn:
+                # Si player turn es True usamos al jugador 1
+                player = player_1
+                phrase, damage = player.run_step(step[0])
+            else:
+                # por el contrario usamos al jugador 2
+                player = player_2
+                phrase, damage = player.run_step(step[1])
+            print(phrase)
+
+            player_turn = not player_turn
